@@ -26,18 +26,19 @@ def files_in(folder):
 
 
 # slice .3mf files in /3mf
-def do_slice():
-    t1= time.perf_counter()
-    print('Slicing...')
-    for file in files_in(path_3mf):
-        _, file_ext = os.path.splitext(file)
-        with change_dir(path_3mf):
-            if file_ext == ".3mf":
-                subprocess.Popen([r'C:\Users\tixen\Desktop\Python\Production Manager\PrusaSlicer\prusa-slicer-console', '-g',file],).communicate(timeout=None)
-            else:
-                pass
-    t2= time.perf_counter()
-    print(f'Done Slicing in {t2-t1} seconds')
+def do_slice(file):
+    _, file_ext = os.path.splitext(file)
+    with change_dir(path_3mf):
+        if file_ext == ".3mf":
+            t1= time.perf_counter()
+            print(f'Slicing {file}')
+            subprocess.Popen([r'C:\Users\tixen\Desktop\Python\Production Manager\PrusaSlicer\prusa-slicer-console', '-g',file],).communicate(timeout=None)
+            t2= time.perf_counter()
+            print(f'Done Slicing {file} in {t2-t1} seconds')
+        else:
+            pass
+    
+    
 
 
 # move .gcodes files from /3mf to /gcodes
@@ -52,6 +53,6 @@ def move_gcodes():
                 pass
     print('Done moving')
 
-
-# do_slice()
+for file in files_in(path_3mf):
+    do_slice(file)
 # move_gcodes()
