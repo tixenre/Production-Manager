@@ -55,4 +55,4 @@ def move_gcodes():
 
 for file in files_in(path_3mf):
     do_slice(file)
-# move_gcodes()
+    move_gcodes()

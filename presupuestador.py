@@ -1,6 +1,6 @@
 import os
 import re
-from gcode_parser import get_data
+from parse import parse_gcode
 
 class Filaments:
     def __init__(self,kind,vendor,spool_cost,density,spool_gr=1000):
@@ -24,25 +24,22 @@ abs_cost = abs_grillon3.gr_cost
 flex_cost = flex_grillon3.gr_cost
 
 
-def get_gr(kind,cm3=0):
+def cm3_to_gr(kind,cm3=0):
     if kind == 'PLA':
         density = 1.25
         gr = cm3 * density
-        return gr
     elif kind == 'PETG':
         density = 1.27
         gr = cm3 * density
-        return gr
     elif kind == 'ABS':
         density = 1.05
         gr = cm3 * density
-        return gr
     elif kind == 'FLEX':
         density = 1.22
         gr = cm3 * density
-        return gr
     else:
         print('Kind not found')
+    return gr
 
 def kind_gr_cost(kind):
     if kind == 'PLA':
@@ -56,21 +53,19 @@ def kind_gr_cost(kind):
     else:
         print('Error Kind_gr_cost')
 
-def cost(kind='PLA',cm3=0,time=0,gr=0):
-    if gr == 0:
-        gr=get_gr(kind,cm3)
-        gr_cost =kind_gr_cost(kind)
-        cost = gr*gr_cost
-        return cost
-    elif gr != 0:
-        gr_cost=kind_gr_cost(kind)
-        cost= (gr*gr_cost)+ time
-        return cost
+def cost(kind='PLA',cm3=0,time=0,gr=None):
+    if gr == None:
+        gr=cm3_to_gr(kind,cm3)  
     else:
-        print('Error cost')
+        pass
+    gr_cost=kind_gr_cost(kind)
+    cost= (gr*gr_cost)+ time
+    return cost
 
 
-
-# Ejemplo para usar   
-sonic=cost(cm3=10,kind='PETG')
-print(f'Sonic sale ${sonic}')
+os.chdir(r'C:\Users\tixen\Desktop\Python\Production Manager\gcode')
+for file in os.listdir():
+    file_name,_= os.path.splitext(file)
+    d=parse_gcode(file)
+    c=cost(d['kind'],d['gr'],d['time'])
+    print(f'{file_name} sale ${c}')
