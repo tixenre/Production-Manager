@@ -63,9 +63,9 @@ def cost(kind='PLA',cm3=0,time=0,gr=None):
     return cost
 
 
-os.chdir(r'C:\Users\tixen\Desktop\Python\Production Manager\gcode')
-for file in os.listdir():
-    file_name,_= os.path.splitext(file)
-    d=parse_gcode(file)
-    c=cost(d['kind'],d['gr'],d['time'])
-    print(f'{file_name} sale ${c}')
+# os.chdir(r'C:\Users\tixen\Desktop\Python\Production Manager\gcode')
+# for file in os.listdir():
+#     file_name,_= os.path.splitext(file)
+#     d=parse_gcode(file)
+#     c=cost(d['kind'],d['gr'],d['time'])
+#     print(f'{file_name} sale ${c}')

@@ -24,8 +24,8 @@ def parse_gcode(file):
                 print('Something went wrong with get_data')
 
 
-os.chdir(r'C:\Users\tixen\Desktop\Python\Production Manager\gcode')
-for file in os.listdir():
-    q=parse_gcode(file)
-    f=q['gr']
-    print(f)
+# os.chdir(r'C:\Users\tixen\Desktop\Python\Production Manager\gcode')
+# for file in os.listdir():
+#     q=parse_gcode(file)
+#     f=q['gr']
+#     print(f)
