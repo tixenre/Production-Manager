@@ -1,6 +1,9 @@
 import os
 import re
 
+## own libs
+from project_path import folder_gcode
+
 def parse_gcode(file):
         file_name, file_ext = os.path.splitext(file)
         if file_ext == ".gcode":
@@ -24,8 +27,7 @@ def parse_gcode(file):
                 print('Something went wrong with get_data')
 
 
-# os.chdir(r'C:\Users\tixen\Desktop\Python\Production Manager\gcode')
-# for file in os.listdir():
+# for file in folder_gcode.iterdir():
 #     q=parse_gcode(file)
 #     f=q['gr']
 #     print(f)

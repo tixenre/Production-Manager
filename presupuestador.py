@@ -1,5 +1,8 @@
-import os
 import re
+from pathlib import Path
+
+## own libs
+from project_path import folder_gcode
 from parse import parse_gcode
 
 class Filaments:
@@ -63,9 +66,8 @@ def cost(kind='PLA',cm3=0,time=0,gr=None):
     return cost
 
 
-# os.chdir(r'C:\Users\tixen\Desktop\Python\Production Manager\gcode')
-# for file in os.listdir():
-#     file_name,_= os.path.splitext(file)
+# for file in folder_gcode.iterdir():
+#     name= Path(file).name
 #     d=parse_gcode(file)
 #     c=cost(d['kind'],d['gr'],d['time'])
-#     print(f'{file_name} sale ${c}')
+#     print(f'{name} sale ${c}')
