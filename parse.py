@@ -20,7 +20,7 @@ def parse_gcode(file):
                 kind = (value_kind.group(1))
                 time = int((float(value_time.group(1))*60)+(float(value_time.group(2)))/60)
                 f= dict(name = (file_name),kind = (kind),gr=(gr),time=(time),cm3=(cm3))
-                print(f'Parsing {file_name}')
+                # print(f'Parsing {file_name}')
                 # print(f)
                 return f
             else:
