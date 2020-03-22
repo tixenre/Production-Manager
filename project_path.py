@@ -1,13 +1,16 @@
 from pathlib import Path
+import shlex
 
-cwd= Path.cwd()
-folder_3mf = cwd / '3mf'
-folder_gcode = cwd / 'gcode'
+cwd = Path.cwd()
+folder_3mf = Path('3mf')
+folder_gcode = Path('gcode')
 
-slicer_path= Path(r'C:\Users\tixen\Desktop\Python\Production Manager\PrusaSlicer\prusa-slicer-console')
+slicer_console = Path(r'PrusaSlicer\prusa-slicer-console')
 
-## Slicer preset ##
-filaments= Path(r'C:\Users\tixen\Desktop\Python\Production Manager\PrusaSlicer\presets\filament')
-prints= Path(r'C:\Users\tixen\Desktop\Python\Production Manager\PrusaSlicer\presets\print')
-printers= Path(r'C:\Users\tixen\Desktop\Python\Production Manager\PrusaSlicer\presets\printer')
+## Slicer preset Path##
+filaments = Path(r'PrusaSlicer\presets\filament')
+prints = Path(r'PrusaSlicer\presets\print')
+printers = Path(r'PrusaSlicer\presets\printer')
 
+# sh = shlex.quote(filaments)
+# print(sh)
