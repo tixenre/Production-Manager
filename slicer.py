@@ -1,63 +1,74 @@
+from pathlib import Path
 import subprocess
 import time
-import shlex
-from shutil import move
-from pathlib import Path
+from project_path import folder_3mf
 
-# onw libs
-from project_path import folder_3mf, folder_gcode, slicer_console, prints, filaments, printers
+# #Slice File
+file_to_slice = Path(folder_3mf / "Sonic.3mf")
+stl_to_slice = Path(folder_3mf / "Sonic.stl")
+# Folder to Slice
+folder_to_slice = folder_3mf
 
-prints_presets = [file for file in prints.iterdir()]
-filaments_presets = [file for file in filaments.iterdir()]
-printers_presets = [file for file in printers.iterdir()]
-
-print_preset_def = prints_presets[1].name
-filament_preset_def = filaments_presets[3].name
-printer_preset_def = printers_presets[0].name
-
-# slice .3mf files in /3mf
-
-
-def do_slice(file, prints_preset='print_preset_def', filaments_preset='filament_preset_def', printers_preset='printer_preset_def'):
-    suffix = Path(file).suffix
-    name = Path(file).name
-    if suffix == ".3mf":
-        t1 = time.perf_counter()
-        print(f'Slicing {name}')
-        subprocess.Popen([slicer_console, '-g', file]).wait()
-        t2 = time.perf_counter()
-        print(f'Done Slicing {name} in {t2-t1} seconds')
-    else:
-        pass
+# Presets Path
+slicer_console = Path(r'PrusaSlicer\prusa-slicer-console')
+print_preset = Path(r'PrusaSlicer\presets\print')
+filament_preset = Path(r'PrusaSlicer\presets\filament')
+printer_preset = Path(r'PrusaSlicer\presets\printer')
+# Presets List
+prints_presets = [file for file in print_preset.iterdir()]
+filaments_presets = [file for file in filament_preset.iterdir()]
+printers_presets = [file for file in printer_preset.iterdir()]
+# Default Profiles for Slicing
+print_preset_def = Path(prints_presets[1])
+filament_preset_def = Path(filaments_presets[3])
+printer_preset_def = Path(printers_presets[0])
+# print(print_preset_def)
+# print(filament_preset_def)
+# print(printer_preset_def)
 
 
-def slice_single(file):
+#Slicer
+def do_slice(file, printset=print_preset_def, fil=filament_preset_def, printer=printer_preset_def):
+    f= Path(file).name
+    t1 = time.perf_counter()
+    print(f'Slicing {f}')
+    s = f'{slicer_console}  -g {file} --load {printset} --load {fil} --load {printer}'
+    subprocess.call(s)
+    t2 = time.perf_counter()
+    print(f'Done Slicing {f} in {t2-t1} seconds')
+
+
+#######check it!
+def stl_to_3mf(file):
+    p=(Path(stl_to_slice).parent) ##Parent Folder
+    stem = Path(file).stem        ## File Stem
+    tw= p / stem / '.3mf'         ## Twin .3mf
+    isf= Path.is_file(tw)         ## If True file has a Twin
+    print(isf)
+    # if isf is False:
+    #     s = f'{slicer_console}  --export-3mf {file}'
+    #     subprocess.call(s)
+    #     Path.unlink(file)
+    #     print (f'{file} does not have a twin and it was exported to .3mf')
+    # elif isf is True:
+    #     Path.unlink(file)
+    #     print(f'{file} has a twin and it has been deleted')
+    # else:
+    #     print('Not STL found')
+
+
+def slice_file(file):
     do_slice(file)
-    pass
 
+def slice_folder(folder):
+    mmf_in_folder = list(Path(folder_to_slice).glob('*.3mf'))
+    stl_in_folder = list(Path(folder_to_slice).glob('*.stl'))
+    for stl in  stl_in_folder:
+        stl_to_3mf(stl)
+    for files in mmf_in_folder:
+        do_slice(files)
+    
 
-def slice_batch(folder):
-    for file in folder.iterdir():
-        do_slice(file)
-    pass
-
-# # # move .gcodes files from /3mf to /gcodes
-
-
-def move_gcodes(file):
-    suffix = Path(file).suffix
-    if suffix == '.gcode':
-        move(file, r'C:\Users\tixen\Desktop\Python\Production Manager\PrusaSlicer\gcode')
-    else:
-        pass
-    print('Done moving .gcode files')
-
-
-#
-    ### TEST ONLY ###
-###### Single File Slicing #####
-# file_to_slice = folder_3mf / 'Sonic.3mf'
-
-# slice_single(file_to_slice)
-###### Batch File Slicing #####
-# slice_batch(folder_3mf)
+# slice_file(file_to_slice)
+# slice_folder(folder_to_slice)
+stl_to_3mf(stl_to_slice)
