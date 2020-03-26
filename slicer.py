@@ -38,7 +38,7 @@ def do_slice(file, printset=print_preset_def, fil=filament_preset_def, printer=p
     print(f'Done Slicing {f} in {t2-t1} seconds')
 
 
-#######check it!
+####### If a stl is on foler, find if a 3mf is to, if not export to 3mf, if so dele it
 def stl_to_3mf(file):
     p=(Path(stl_to_slice).parent) ##Parent Folder
     stem = Path(file).stem        ## File Stem
