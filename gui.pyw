@@ -22,36 +22,39 @@ class Gui:
         frame_files = tk.LabelFrame(self.window, text="Files")
         frame_files.pack(fill=tk.X)
 
+
+
         # Name Input
+        self.name_var= tk.StringVar()
         tk.Label(frame_info, text='Name: ').grid(row=1, column=0)
-        self.name = tk.Entry(frame_info)
+        self.name = tk.Entry(frame_info, textvariable=self.name_var)
         self.name.focus()
         self.name.grid(row=1, column=1)
 
         # Size Input
+        self.size_var= tk.IntVar()
         tk.Label(frame_info, text='Size (mm): ').grid(row=2, column=0)
-        self.size = tk.Entry(frame_info)
+        self.size = tk.Entry(frame_info, textvariable=self.size_var)
         self.size.grid(row=2, column=1)
 
         # Filament Input
-        self.filament_variable = tk.StringVar()
+        self.filament_var = tk.StringVar()
         filaments_lis = {'PLA', 'PETg', 'ABS', 'Flex'}
         tk.Label(frame_info, text='Filament: ').grid(row=3, column=0)
         self.filament = tk.OptionMenu(
-            frame_info, self.filament_variable, *filaments_lis)
+            frame_info, self.filament_var, *filaments_lis)
         self.filament.grid(row=3, column=1)
-        # def change_dropdown(*args):
-        #     print( tkvar.get() )
-        # tkvar.trace('w', change_dropdown)
-
+        
         # Gr Input
+        self.gr_var= tk.IntVar()
         tk.Label(frame_info, text='Gr: ').grid(row=4, column=0)
-        self.gr = tk.Entry(frame_info)
+        self.gr = tk.Entry(frame_info,textvariable=self.gr_var)
         self.gr.grid(row=4, column=1)
 
         # Time input
+        self.time_var= tk.IntVar()
         tk.Label(frame_info, text='Time (min): ').grid(row=5, column=0)
-        self.time = tk.Entry(frame_info)
+        self.time = tk.Entry(frame_info,textvariable=self.time_var)
         self.time.grid(row=5, column=1)
 
         # Cost
@@ -79,7 +82,7 @@ class Gui:
         # Table
         self.tree = ttk.Treeview(frame_files, columns=(
             'name', 'size', 'kind', 'gr', 'time', 'cost', 'price'))
-        self.tree.pack(side=tk.TOP)
+        self.tree.pack(side=tk.TOP,fill=tk.X)
         self.tree.column('#0', width=30, stretch=tk.NO)
         self.tree.heading('#0', text='ID', anchor=tk.W)
         self.tree.column('name', width=75, minwidth=25)
@@ -98,7 +101,9 @@ class Gui:
         self.tree.heading('price', text='Price', anchor=tk.W)
 
         # Table Button
-        ttk.Button(frame_files, text='Edit', command=self.presupuestar).pack(
+        ttk.Button(frame_files, text='Read', command=self.read_file).pack(
+            fill=tk.X, side=tk.LEFT)
+        ttk.Button(frame_files, text='Update', command=self.add_update).pack(
             fill=tk.X, side=tk.LEFT)
         ttk.Button(frame_files, text='Presupuestar',
                    command=self.presupuestar).pack(fill=tk.X, side=tk.LEFT)
@@ -143,7 +148,7 @@ class Gui:
         if len(self.name.get()) != 0:
             self.presupuestar()
             query = 'INSERT INTO files_db VALUES(NULL,?,?,?,?,?,?,?)'
-            parameters = (self.name.get(), self.size.get(), self.filament_variable.get(
+            parameters = (self.name.get(), self.size.get(), self.filament_var.get(
             ), self.gr.get(), self.time.get(), self.cost['text'], self.price['text'])
             self.run_query(query, parameters)
             self.message['text'] = f'{self.name.get()} saved'
@@ -154,17 +159,49 @@ class Gui:
     def delete_file(self):
         self.message['text'] = ''
         try:
-            self.tree.item(self.tree.selection())['text']
+            self.tree.item(self.tree.selection())['values'][0]
         except IndexError:
             self.message['text'] = "Select a File"
             return
         self.message['text'] = ''
-        name = self.tree.item(self.tree.selection())['text']
-        query = 'DELETE FROM files_db WHERE ID = ?'
+        name = self.tree.item(self.tree.selection())['values'][0]
+        query = 'DELETE FROM files_db WHERE name = ?'
         self.run_query(query, (name,))
         self.message['text'] = f'File {name} has been deleted'
         self.get_files()
 
+    def read_file(self):
+        try:
+            self.tree.item(self.tree.selection())['values'][0]
+        except IndexError:
+            self.message['text'] = "Select a File"
+            return
+        query = 'SELECT * FROM files_db  WHERE name = ?'
+        name = self.tree.item(self.tree.selection())['values'][0]
+        with sqlite3.connect(self.db_name) as conn:
+            cursor = conn.cursor()
+            cursor.execute(query,(name,))
+            files=cursor.fetchall()
+            for file in files:
+                self.name_var.set(file[1])
+                self.size_var.set(file[2])
+                self.filament_var.set(file[3])
+                self.gr_var.set(file[4])
+                self.time_var.set(file[5])
+        self.message['text'] = f'{self.name.get()} Read'
+
+    def add_update(self):
+        if len(self.name.get()) != 0:
+            self.presupuestar()
+            query = 'UPDATE files_db SET name = ?, size = ?, filament_kind = ?, gr = ?, minutes = ?, cost = ?, price = ?'
+            parameters = (self.name.get(), self.size.get(), self.filament_var.get(
+            ), self.gr.get(), self.time.get(), self.cost['text'], self.price['text'])
+            self.run_query(query, parameters)
+            self.message['text'] = f'{self.name.get()} saved'
+        else:
+            self.message['text'] = 'Name, gr and time are required'
+        self.get_files()    
+        
 
 if __name__ == "__main__":
 
