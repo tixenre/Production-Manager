@@ -1,56 +1,75 @@
-import filament
-from itertools import count
+from pathlib import Path
+
+# own libs
+from project_path import folder_gcode
+from parse import parse_gcode
 
 
-class Presupuesto:
+class Filaments:
+    def __init__(self, kind, vendor, spool_cost, density, spool_gr=1000):
+        self.kind = "kind"
+        self.vendor = "vendor"
+        self.spool_cost = float(spool_cost)
+        self.density = float(density)
+        self.spool_gr = int(spool_gr)
+        self.gr_cost = float(spool_cost/spool_gr)
 
-    mode = {'servicio': 2, 'producto': 1.5, 'mardel3d': 1.1}
-    comision = {'cash': 1, 'mercadopago': 1.06,
-                'mercadolibre_clasic': 1.13, 'mercadolibre_gold': 1.23}
 
-    def __init__(self, kind, cm3=None, time=None,**kargs):
-        
-        self.kind = kind
-        self.cm3 = cm3
-        self.time = time
-        self.gr = filament.cm3_to_gr(self.kind, self.cm3)
-        self.cost = self.get_cost()
-        self.servicio = self.get_price(self.mode['servicio'])
-        self.producto = self.get_price(self.mode['producto'])
-        self.mardel3d = self.get_price(self.mode['mardel3d'])
-        
+pla_grillon3 = Filaments("PLA", "Grillon3", 1000, 1.25, spool_gr=1000)
+petg_grillon3 = Filaments("PETG", "Grillon3", 1000, 1.27, spool_gr=1000)
+pla_pal = Filaments("PLA", "PrintaLot", 960, 1.25, spool_gr=1000)
+flex_grillon3 = Filaments("Flex", "Grillon3", 1614, 1.25, spool_gr=1000)
+abs_grillon3 = Filaments("ABS", "Grillon3", 900, 1.27, spool_gr=1000)
 
-    def get_cost(self):
-        if self.gr == None:
-            self.gr = filament.cm3_to_gr(self.kind, self.cm3)
-        else:
-            pass
-        gr_cost = filament.kind_gr_cost(self.kind)
-        cost = (self.gr*gr_cost) + self.time
-        return cost
+pla_cost = pla_grillon3.gr_cost
+petg_cost = petg_grillon3.gr_cost
+abs_cost = abs_grillon3.gr_cost
+flex_cost = flex_grillon3.gr_cost
 
-    def cost_filament(self):
+
+def cm3_to_gr(kind, cm3=0):
+    if kind == 'PLA':
+        density = 1.25
+        gr = cm3 * density
+    elif kind == 'PETG':
+        density = 1.27
+        gr = cm3 * density
+    elif kind == 'ABS':
+        density = 1.05
+        gr = cm3 * density
+    elif kind == 'FLEX':
+        density = 1.22
+        gr = cm3 * density
+    else:
+        print('Kind not found')
+    return gr
+
+
+def kind_gr_cost(kind):
+    if kind == 'PLA':
+        return pla_cost
+    elif kind == 'PETG':
+        return petg_cost
+    elif kind == 'ABS':
+        return abs_cost
+    elif kind == 'FLEX':
+        return flex_cost
+    else:
+        print('Error Kind_gr_cost')
+
+
+def cost(kind='PLA', cm3=0, time=0, gr=None):
+    if gr == None:
+        gr = cm3_to_gr(kind, cm3)
+    else:
         pass
+    gr_cost = kind_gr_cost(kind)
+    cost = (gr*gr_cost) + time
+    return cost
 
-    def cost_electricity(self):
-        pass   
 
-
-    def get_price(self, mode):
-        p = self.cost*mode
-        price = {key: int(value*p) for (key, value) in self.comision.items()}
-        return price
-
-p3 = Presupuesto('PLA', cm3=1000, time=0)
-p2 = Presupuesto('PETG', cm3=1000, time=0)
-p1 = Presupuesto('PLA', cm3=1000, time=0)
-
-if __name__ == "__main__":
-    print(p1.cost)
-    print(p2.cost)
-    print(p1.servicio)
-    print(p2.servicio)
-    print(p1.producto)
-    print(p2.producto)
-    print(p1.mardel3d)
-    print(p2.mardel3d)
+# for file in folder_gcode.iterdir():
+#     name = Path(file).name
+#     d = parse_gcode(file)
+#     c = cost(d['kind'], d['gr'], d['time'])
+#     print(f'{name} sale ${c}')
