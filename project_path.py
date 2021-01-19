@@ -1,27 +1,13 @@
 from pathlib import Path
-import shlex
+import os
 
-cwd = Path.cwd()
-folder_3mf = Path('3mf')
-folder_gcode = Path('gcode')
+path_=Path(".")
 
-slicer_console = Path(r'PrusaSlicer\prusa-slicer-console')
-
-## Slicer preset Path##
-prints = Path(r'PrusaSlicer\presets\print')
-filaments = Path(r'PrusaSlicer\presets\filament')
-printers = Path(r'PrusaSlicer\presets\printer')
+folder_gcode= path_ /"gcode"
+folder_gcode_full=folder_gcode.resolve()
+folder_3mf= path_/"3mf"
+folder_3mf_full=folder_3mf.resolve()
+slicer_console= path_/"PrusaSlicer-2.3.0/prusa-slicer-console.exe"
+printset_file="bd\printset\ss.ini"
 
 
-prints_presets = [file for file in prints.iterdir()]
-filaments_presets = [file for file in filaments.iterdir()]
-printers_presets = [file for file in printers.iterdir()]
-
-print_preset_def = Path(prints_presets[1])
-filament_preset_def = filaments_presets[3]
-printer_preset_def = printers_presets[0]
-
-
-# print(print_preset_def)
-# print(filament_preset_def)
-# print(printer_preset_def)

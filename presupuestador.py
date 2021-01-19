@@ -1,56 +1,35 @@
-import filament
-from itertools import count
+import gspread
+from gspread.models import Spreadsheet
+from oauth2client.service_account import ServiceAccountCredentials
+from pprint import pprint
+import costos
+import math
+
+scope = ["https://spreadsheets.google.com/feeds",'https://www.googleapis.com/auth/spreadsheets',"https://www.googleapis.com/auth/drive.file","https://www.googleapis.com/auth/drive"]
+
+creds = ServiceAccountCredentials.from_json_keyfile_name("creds.json", scope)
+
+client = gspread.authorize(creds)
+
+sheet = client.open("Presupuestador").sheet1  # Open the spreadhseet
 
 
-class Presupuesto:
-
-    mode = {'servicio': 2, 'producto': 1.5, 'mardel3d': 1.1}
-    comision = {'cash': 1, 'mercadopago': 1.06,
-                'mercadolibre_clasic': 1.13, 'mercadolibre_gold': 1.23}
-
-    def __init__(self, kind, cm3=None, time=None,**kargs):
-        
-        self.kind = kind
-        self.cm3 = cm3
-        self.time = time
-        self.gr = filament.cm3_to_gr(self.kind, self.cm3)
-        self.cost = self.get_cost()
-        self.servicio = self.get_price(self.mode['servicio'])
-        self.producto = self.get_price(self.mode['producto'])
-        self.mardel3d = self.get_price(self.mode['mardel3d'])
-        
-
-    def get_cost(self):
-        if self.gr == None:
-            self.gr = filament.cm3_to_gr(self.kind, self.cm3)
-        else:
-            pass
-        gr_cost = filament.kind_gr_cost(self.kind)
-        cost = (self.gr*gr_cost) + self.time
-        return cost
-
-    def cost_filament(self):
-        pass
-
-    def cost_electricity(self):
-        pass   
+headers = list(sheet.row_values(1))
+nombre_col = 1
+variante_col = 2
+hs_col = 3
+gr_col = 4
+costo_col = 5
+ganancia_col = 6
+precio_col= 7
 
 
-    def get_price(self, mode):
-        p = self.cost*mode
-        price = {key: int(value*p) for (key, value) in self.comision.items()}
-        return price
+#range(10)
+#range(len(sheet.col_values(1)))
+for i in range(len(sheet.col_values(1))):
+    a=sheet.cell(i+2,hs_col).numeric_value
+    b=sheet.cell(i+2,gr_col).numeric_value
 
-p3 = Presupuesto('PLA', cm3=1000, time=0)
-p2 = Presupuesto('PETG', cm3=1000, time=0)
-p1 = Presupuesto('PLA', cm3=1000, time=0)
-
-if __name__ == "__main__":
-    print(p1.cost)
-    print(p2.cost)
-    print(p1.servicio)
-    print(p2.servicio)
-    print(p1.producto)
-    print(p2.producto)
-    print(p1.mardel3d)
-    print(p2.mardel3d)
+    sheet.update_cell(i+2,precio_col,math.ceil(costos.tiendanube(a,b)))
+    sheet.update_cell(i+2,costo_col,math.ceil(costos.gasto(a,b)))
+    sheet.update_cell(i+2,ganancia_col,math.ceil(costos.ganancia(a,b)))
