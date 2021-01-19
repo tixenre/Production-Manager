@@ -4,15 +4,15 @@ from datetime import datetime, time, timedelta
 a=datetime.today()
 now=a.hour*60+a.minute
 
-bb=10*60
+bb=13*60
 time_of_day=int(bb)
 
 #test list of dic
-b = [{'Name': 'Stand Celular Curly', 'Minutes': 108}, {'Name': 'Stand Celular Larry', 'Minutes': '121'}, {'Name': 'Stand Celular Moe', 'Minutes': '129'}]
+b = [{'Name': 'Stand Celular Curly', 'Minutes': 108}, {'Name': 'Stand Celular Larry', 'Minutes': '109'}, {'Name': 'Stand Celular Moe', 'Minutes': '129'}]
 
 def print_scheduler(print_jobs_list):
+    jobs_list=[]
     for i in print_jobs_list:
-        jobs_list=[]
         t=int(i.get("Minutes"))
         n=i.get("Name")
         evening=(20*60)-time_of_day
@@ -34,5 +34,6 @@ def print_scheduler(print_jobs_list):
         else:
             print("Cant find data")
    
-        return jobs_list
+    return jobs_list
 
+#print(print_scheduler(b))
