@@ -1,3 +1,4 @@
 *.gcode
 *.3mf
 __pychache__
+prod_manager_venv
