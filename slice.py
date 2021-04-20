@@ -6,11 +6,11 @@ from pathlib import Path
 import project_path as pp
 
 #PrusaSlicer
-def do_slice(file,printset=pp.printset_file):
+def do_slice(file,printset=pp.printset_file,folder=pp.folder_3mf):
     folder_to=pp.folder_gcode_full
     file_ext = Path(file).suffix
     file_stem = Path(file).stem
-    file_to_slice=pp.folder_3mf/file
+    file_to_slice=folder/file
     if file_ext == ".3mf":
         t1 = time.perf_counter()
         print(f'Slicing {file_stem}')
