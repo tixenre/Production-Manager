@@ -1,25 +1,41 @@
 import re
 import os
-import csv
 import datetime
 from pathlib import Path
+import re
+import base64
+
+import pandas as pd
+import numpy as np
 
 #Gcode Folder
 import project_path as pp
+import prints_database
 
 
 today= datetime.date.today()
-fieldnames = ["Name","Minutes","Hs","Gr","Cm3","Kind","Date"]
+fieldnames = prints_database.database_fieldnames
 
 
-
-def parser(file):
+def parser(file,delete_gcode=True):
     folder=pp.folder_gcode
     file_ext = Path(file).suffix
     file_stem = Path(file).stem
     file_to_parse=folder/file
     if file_ext == ".gcode":
-        with open(file_to_parse, 'r') as f_gcode:
+
+
+        #Parce Thumbnail 
+        with open(file,"r") as gcode_file:
+            data = gcode_file.read()
+            match = re.search(r"(; thumbnail begin 220x124 22424)(.*)(; thumbnail end)",data, re.DOTALL)
+            thumbnail = match.group(2).replace("; ", "")
+            if len(thumbnail) > 0:
+                with open(f"{file_stem}.png","wb") as png_file:
+                    png_file.write(base64.b64decode(thumbnail.encode()))
+
+        #Parce Print Job details
+        with open(file, 'r') as f_gcode:
             data = f_gcode.read()
             value_gr = re.search(r'total filament used \[g\] = (\d+.\d+)',data)
             value_cm3 = re.search(r'filament used \[cm3\] = (\d+.\d+)',data)
@@ -41,33 +57,40 @@ def parser(file):
             gr = float(value_gr.group(1))
             kind = (value_kind.group(1))
             cm3= float(value_cm3.group(1))
+
             print(f'Parsing {file_stem}')
 
-            with open("gcodes_parsed.csv",'a',newline='') as csv_temp:
-                csv_writer = csv.DictWriter(csv_temp, fieldnames=fieldnames, delimiter=',')
-                csv_writer.writerow({
-                                    "Name":file_stem,
-                                    "Minutes":minutes,
-                                    "Hs":str(datetime.timedelta(minutes=minutes)),
-                                    "Gr":gr,
-                                    "Cm3":cm3,
-                                    "Kind":kind,
-                                    "Date":today,
-                                    })
-            os.remove(file_to_parse)
+           
+            #Create Dataframe and export it to .csv
+            df = pd.DataFrame(columns=fieldnames)
+            df.loc[1,"Name"] = file_stem
+            df.loc[1,"Minutes"] = minutes
+            df.loc[1,"Hs"] = str(datetime.timedelta(minutes=minutes))
+            df.loc[1,"Gr"] = gr
+            df.loc[1,"3mf Path"] = file_to_parse
+            df.loc[1,"cm3"] = cm3
+            df.loc[1,"Kind"] = kind
+            df.loc[1,"Last Modify"] = today
+            df.set_index("ID",inplace=True)
+            df.to_csv(f"csv/{file_stem}.csv")
+
+            print(f'{file_stem} was parced and exported to .csv')
+
             
+            if delete_gcode == True:
+                os.remove(file)
+
+
         else:
             print(f'Something went wrong with {file}')
-
-    
-    
-
-
-def parse_gcode(): 
-    with open("gcodes_parsed.csv",'w',newline='') as csv_temp:  
-        csv_writer = csv.DictWriter(csv_temp, fieldnames=fieldnames, delimiter=',')
-        csv_writer.writeheader()
-
-    for f in os.listdir(pp.folder_gcode):
-        parser(f)
-    pass
+        pass
+        
+# def extract_thumbnail(gcode):
+#     file_stem = Path(gcode).stem
+#     with open(gcode,"r") as gcode_file:
+#         data = gcode_file.read()
+#         match = re.search(r"(; thumbnail begin 220x124 22424)(.*)(; thumbnail end)",data, re.DOTALL)
+#         thumbnail = match.group(2).replace("; ", "")
+#     if len(thumbnail) > 0:
+#         with open(f"{file_stem}.png","wb") as png_file:
+#             png_file.write(base64.b64decode(thumbnail.encode()))

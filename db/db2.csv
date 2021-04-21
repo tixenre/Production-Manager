@@ -1,0 +1,10 @@
+ID,Name,Variant,Minutes,Hs,Gr,Kind,cm3,Cost,Profit,Price,3mf Path,Filament,LastSliced,PrinterSU,FilamentSU,PrintSU,Last Modify
+imp0005,Lapicero_ADN,,305,5:05:00,45.76,PLA,36.9,,,,gcode\Lapicero_ADN.gcode,,,,,,2021-04-20
+imp0006,Stand_Celular_Curly,,108,1:48:00,46.19,PLA,37.25,,,,gcode\Stand_Celular_Curly.gcode,,,,,,2021-04-20
+imp0007,Stand_Celular_Larry,,121,2:01:00,53.31,PLA,42.99,,,,gcode\Stand_Celular_Larry.gcode,,,,,,2021-04-20
+imp0008,Test,,121,2:01:00,53.31,PLA,42.99,,,,gcode\Stand_Celular_Larry.gcode,,,,,,2021-04-20
+imp0009,Test,,121,2:01:00,53.31,PLA,42.99,,,,gcode\Stand_Celular_Larry.gcode,,,,,,2021-04-20
+imp0010,Test,,121,2:01:00,53.31,PLA,42.99,,,,gcode\Stand_Celular_Larry.gcode,,,,,,2021-04-20
+imp0011,Test,,121,2:01:00,53.31,PLA,42.99,,,,gcode\Stand_Celular_Larry.gcode,,,,,,2021-04-20
+imp0012,Test,,121,2:01:00,53.31,PLA,42.99,,,,gcode\Stand_Celular_Larry.gcode,,,,,,2021-04-20
+imp0013,Test,,121,2:01:00,53.31,PLA,42.99,,,,gcode\Stand_Celular_Larry.gcode,,,,,,2021-04-20
