@@ -12,6 +12,11 @@ import project_path as pp
 
 
 root=Tk()
+root.title("3PM - 3D Poduction Manager v0.0")
+root.config(bg='gray')
+
+
+
 
 
 #Slice .3mf in a folder
@@ -53,6 +58,16 @@ def get_info():
         gcode_parser.parser(f,delete_gcode=True)
 
 
+def ss():
+    path_3mf()
+    files= filedialog.askopenfilenames(title="Select .3mf",
+                                        filetypes=[(".3mf Files","*.3mf")],
+                                        multiple=True,
+                                        initialdir= pp.folder_3mf)
+    for f in files:
+        p= Path(f)
+        slice.do_slice(p)
+        gcode_parser.parser(f,delete_gcode=True)
 
 #Botones
 button_3mf_select= Button(root,text="Slice .3mf",command=path_3mf).pack()
