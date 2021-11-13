@@ -12,7 +12,7 @@ class Gui:
 
         self.window = window
         self.window.title('Production Manager v0.3 beta1')
-        # self.window.geometry('1200x650')
+        self.window.geometry('1200x650')
 
     # Frame Files
         frame_info = tk.LabelFrame(self.window, text="File Info")

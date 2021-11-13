@@ -1,74 +1,61 @@
-from pathlib import Path
 import subprocess
 import time
-from project_path import folder_3mf
-
-# #Slice File
-file_to_slice = Path(folder_3mf / "Sonic.3mf")
-stl_to_slice = Path(folder_3mf / "Sonic.stl")
-# Folder to Slice
-folder_to_slice = folder_3mf
-
-# Presets Path
-slicer_console = Path(r'PrusaSlicer\prusa-slicer-console')
-print_preset = Path(r'PrusaSlicer\presets\print')
-filament_preset = Path(r'PrusaSlicer\presets\filament')
-printer_preset = Path(r'PrusaSlicer\presets\printer')
-# Presets List
-prints_presets = [file for file in print_preset.iterdir()]
-filaments_presets = [file for file in filament_preset.iterdir()]
-printers_presets = [file for file in printer_preset.iterdir()]
-# Default Profiles for Slicing
-print_preset_def = Path(prints_presets[1])
-filament_preset_def = Path(filaments_presets[3])
-printer_preset_def = Path(printers_presets[0])
-# print(print_preset_def)
-# print(filament_preset_def)
-# print(printer_preset_def)
+from pathlib import Path
+from os import remove
+import project_path as pp
 
 
-#Slicer
-def do_slice(file, printset=print_preset_def, fil=filament_preset_def, printer=printer_preset_def):
-    f= Path(file).name
+def do_slice(file,printset=pp.print_preset_def, fil=pp.filament_preset_def, printer=pp.printer_preset_def):
+
+    file_suffix = Path(file).suffix 
+
+    if file_suffix == ".3mf":
+        s = f'{pp.slicer_console}  -g {file}'
+    elif file_suffix == ".stl":
+        s = f'{pp.slicer_console}  -g {file} --load {printset} --load {fil} --load {printer}'
+
+
+    file_name = Path(file).name
+    print(f'Slicing: {file_name}')
     t1 = time.perf_counter()
-    print(f'Slicing {f}')
-    s = f'{slicer_console}  -g {file} --load {printset} --load {fil} --load {printer}'
     subprocess.call(s)
     t2 = time.perf_counter()
-    print(f'Done Slicing {f} in {t2-t1} seconds')
+    time_elapse = round(t2-t1,2)
+    print(f'Done slicing {file_name} in {time_elapse} seconds')
+
+def slice_3mf(file):
+
+    file_suffix = Path(file).suffix
+
+    if file_suffix == ".3mf":
+        do_slice(file)
+
+#Slice
+def slice_stl(file):
+
+    file_suffix = Path(file).suffix
+
+    if file_suffix == ".stl":
+        printset=pp.print_preset_def
+        fil=pp.filament_preset_def
+        printer=pp.printer_preset_def
+        do_slice(file, printset, fil, printer)
 
 
-####### If a stl is on foler, find if a 3mf is to, if not export to 3mf, if so dele it
-def stl_to_3mf(file):
-    p=(Path(stl_to_slice).parent) ##Parent Folder
-    stem = Path(file).stem        ## File Stem
-    tw= p / stem / '.3mf'         ## Twin .3mf
-    isf= Path.is_file(tw)         ## If True file has a Twin
-    print(isf)
-    # if isf is False:
-    #     s = f'{slicer_console}  --export-3mf {file}'
-    #     subprocess.call(s)
-    #     Path.unlink(file)
-    #     print (f'{file} does not have a twin and it was exported to .3mf')
-    # elif isf is True:
-    #     Path.unlink(file)
-    #     print(f'{file} has a twin and it has been deleted')
-    # else:
-    #     print('Not STL found')
+
+def slice_folder(folder, s_3mf = True, s_stl = False):
+
+    for file in folder.iterdir():
+        file_sufix= Path(file).suffix
+        if file_sufix == ".gcode":
+            remove(file)
+        elif s_3mf == True and file_sufix == ".3mf":   
+            slice_3mf(file)
+        elif s_stl == True and file_sufix == ".stl":
+            slice_stl(file)
 
 
-def slice_file(file):
-    do_slice(file)
+# file_to_slice = Path(pp.folder_3mf / "Sonic.3mf")
+# stl_to_slice = Path(pp.folder_3mf / "Sonic.stl")
 
-def slice_folder(folder):
-    mmf_in_folder = list(Path(folder_to_slice).glob('*.3mf'))
-    stl_in_folder = list(Path(folder_to_slice).glob('*.stl'))
-    for stl in  stl_in_folder:
-        stl_to_3mf(stl)
-    for files in mmf_in_folder:
-        do_slice(files)
-    
-
-# slice_file(file_to_slice)
-# slice_folder(folder_to_slice)
-stl_to_3mf(stl_to_slice)
+slice_folder(pp.folder_3mf)

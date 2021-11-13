@@ -1,5 +1,5 @@
 from pathlib import Path
-import shlex
+# import shlex
 
 cwd = Path.cwd()
 folder_3mf = Path('3mf')
@@ -12,16 +12,15 @@ prints = Path(r'PrusaSlicer\presets\print')
 filaments = Path(r'PrusaSlicer\presets\filament')
 printers = Path(r'PrusaSlicer\presets\printer')
 
+print_preset_def = Path(r'PrusaSlicer\presets\print\030_Rapido_Fuerte.ini')
+filament_preset_def = Path(r'PrusaSlicer\presets\filament\PLA.ini')
+printer_preset_def = Path(r'PrusaSlicer\presets\printer\def.ini')
 
-prints_presets = [file for file in prints.iterdir()]
-filaments_presets = [file for file in filaments.iterdir()]
-printers_presets = [file for file in printers.iterdir()]
-
-print_preset_def = Path(prints_presets[1])
-filament_preset_def = filaments_presets[3]
-printer_preset_def = printers_presets[0]
+print_presets = [f for f in prints.iterdir()]
+filament_presets = [f for f in filaments.iterdir()]
+printer_presets = [f for f in printers.iterdir()]
 
 
-# print(print_preset_def)
-# print(filament_preset_def)
-# print(printer_preset_def)
+
+# print(prints)
+
