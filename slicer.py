@@ -3,15 +3,13 @@ import time
 from pathlib import Path
 from os import remove
 import project_path as pp
-
+import file_checks 
 
 def do_slice(file,printset=pp.print_preset_def, fil=pp.filament_preset_def, printer=pp.printer_preset_def):
 
-    file_suffix = Path(file).suffix 
-
-    if file_suffix == ".3mf":
+    if file_checks.is_3mf(file):
         s = f'{pp.slicer_console}  -g {file}'
-    elif file_suffix == ".stl":
+    elif file_checks.is_stl(file):
         s = f'{pp.slicer_console}  -g {file} --load {printset} --load {fil} --load {printer}'
 
 
@@ -25,33 +23,25 @@ def do_slice(file,printset=pp.print_preset_def, fil=pp.filament_preset_def, prin
 
 def slice_3mf(file):
 
-    file_suffix = Path(file).suffix
-
-    if file_suffix == ".3mf":
+    if file_checks.is_3mf(file):
         do_slice(file)
 
 #Slice
 def slice_stl(file):
 
-    file_suffix = Path(file).suffix
-
-    if file_suffix == ".stl":
+    if file_checks.is_stl(file):
         printset=pp.print_preset_def
         fil=pp.filament_preset_def
         printer=pp.printer_preset_def
         do_slice(file, printset, fil, printer)
 
-
-
 def slice_folder(folder, s_3mf = True, s_stl = False):
-
     for file in folder.iterdir():
-        file_sufix= Path(file).suffix
-        if file_sufix == ".gcode":
+        if file_checks.is_gcode(file):
             remove(file)
-        elif s_3mf == True and file_sufix == ".3mf":   
+        elif s_3mf == True and file_checks.is_3mf(file):   
             slice_3mf(file)
-        elif s_stl == True and file_sufix == ".stl":
+        elif s_stl == True and file_checks.is_stl(file):
             slice_stl(file)
 
 

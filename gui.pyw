@@ -6,7 +6,7 @@ import sqlite3
 
 class Gui:
 
-    db_name = 'database.db'
+    db_name = 'database.sqlite'
 
     def __init__(self, window):
 

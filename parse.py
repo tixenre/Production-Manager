@@ -30,4 +30,4 @@ def parse_gcode(file):
 for file in folder_gcode.iterdir():
     if file.suffix == ".gcode":
         q = parse_gcode(file)
-        print(q["time"])
+        print(q["cm3"])
