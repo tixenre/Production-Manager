@@ -2,7 +2,6 @@ import sqlite3
 from sqlite3 import Error
 import pandas as pd
 
-
 def create_connection(path):
     connection = None
     try:
@@ -21,15 +20,18 @@ def create_tables():
     with conn:
         c.execute("""CREATE TABLE IF NOT EXISTS _3mf (
                 id text PRIMARY KEY,  
-                date text,
                 name text,
                 description text,
+                size real,
+                price real,
                 time real,
                 gr real,
-                filament real,
-                layer_height real,
+                instances_per_buildplate real,
+                filament text,
+                printer text,
                 cm3 real,
-                path text
+                path text,
+                last_updated text
                 )""")
 
 

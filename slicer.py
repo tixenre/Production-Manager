@@ -1,51 +1,54 @@
 import subprocess
 import time
-from pathlib import Path
 from os import remove
 import project_path as pp
-import file_checks 
+import file_check 
 
-def do_slice(file,printset=pp.print_preset_def, fil=pp.filament_preset_def, printer=pp.printer_preset_def):
+def do_slice(file,**kwargs):
 
-    if file_checks.is_3mf(file):
-        s = f'{pp.slicer_console}  -g {file}'
-    elif file_checks.is_stl(file):
-        s = f'{pp.slicer_console}  -g {file} --load {printset} --load {fil} --load {printer}'
+    if kwargs.get("print_set"):
+        print_set = kwargs.get("print_set")
+    else:
+        print_set = pp.print_preset_def
+    if kwargs.get("filament_set"):
+        filament_set = kwargs.get("filament_set")
+    else:
+        filament_set = pp.filament_preset_def
+    if kwargs.get("printer_set"):
+        printer_set = kwargs.get("printer_set")
+    else:
+        printer_set = pp.print_preset_def
+
+    if (kwargs and file_check.is_3mf(file)) or file_check.is_stl(file):
+        settings = f'{pp.slicer_console}  -g {file} --load {print_set} --load {filament_set} --load {printer_set}'
+
+    elif not kwargs and file_check.is_3mf(file):
+        settings = f'{pp.slicer_console}  -g {file}'
 
 
-    file_name = Path(file).name
+    file_name = file_check.get_file_name(file)
+    print("")
     print(f'Slicing: {file_name}')
     t1 = time.perf_counter()
-    subprocess.call(s)
+    subprocess.call(settings)
     t2 = time.perf_counter()
     time_elapse = round(t2-t1,2)
     print(f'Done slicing {file_name} in {time_elapse} seconds')
 
-def slice_3mf(file):
-
-    if file_checks.is_3mf(file):
-        do_slice(file)
-
-#Slice
-def slice_stl(file):
-
-    if file_checks.is_stl(file):
-        printset=pp.print_preset_def
-        fil=pp.filament_preset_def
-        printer=pp.printer_preset_def
-        do_slice(file, printset, fil, printer)
-
-def slice_folder(folder, s_3mf = True, s_stl = False):
-    for file in folder.iterdir():
-        if file_checks.is_gcode(file):
-            remove(file)
-        elif s_3mf == True and file_checks.is_3mf(file):   
-            slice_3mf(file)
-        elif s_stl == True and file_checks.is_stl(file):
-            slice_stl(file)
+# def slice_folder(folder):
+#     for file in folder.iterdir():
+#         if file_check.is_gcode(file):
+#             remove(file)
+#         elif file_check.is_3mf(file):   
+#             do_slice(file)
 
 
 # file_to_slice = Path(pp.folder_3mf / "Sonic.3mf")
 # stl_to_slice = Path(pp.folder_3mf / "Sonic.stl")
 
-slice_folder(pp.folder_3mf)
+# slice_folder(pp.folder_3mf)
+# slice_folder(Path(r"C:\Users\marti\Documents\Hola_Deco\3mf"))
+
+# do_slice(Path(r"C:\Users\marti\Documents\GitHub\Production-Manager\3mf\Stand_Celular_Cargador.3mf"))
+# do_slice(Path(r"C:\Users\marti\Documents\GitHub\Production-Manager\3mf\Robert_Plant.3mf"))
+
