@@ -18,6 +18,8 @@ class FileS():
         pass
 
 
-file = Path(r"C:\Users\marti\Documents\GitHub\Production-Manager\gcode\Mickey Navidad Bola - (1h28m) (18.3833gr) (0.3mm) (PLA) (0.4) (17-11).gcode")
-
-print(FileS(file).__dict__)
+folder = Path(r"C:\Users\marti\Documents\Hola_Deco\3mf")
+for file in folder.iterdir():
+    if file_check.is_gcode(file):
+        q = parse_gcode(file)
+        print(FileS(file).__dict__)

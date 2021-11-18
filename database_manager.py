@@ -18,11 +18,11 @@ c=conn.cursor()
 
 def create_tables():
     with conn:
-        c.execute("""CREATE TABLE IF NOT EXISTS _3mf (
+        c.execute("""CREATE TABLE IF NOT EXISTS files (
                 id text PRIMARY KEY,  
                 name text,
                 description text,
-                size real,
+                size_z real,
                 price real,
                 time real,
                 gr real,
@@ -31,8 +31,63 @@ def create_tables():
                 printer text,
                 cm3 real,
                 path text,
+                nozzle_diameter real,
+                slicer text,
                 last_updated text
                 )""")
+
+        c.execute("""CREATE TABLE IF NOT EXISTS orders (
+                id text PRIMARY KEY,  
+                name text,
+                size_z real,
+                price real,
+                time real,
+                gr real,
+                instances_per_buildplate real,
+                filament text,
+                printer text,
+                cm3 real,
+                path text,
+                nozzle_diameter real,
+                slicer text,
+                date text
+                )""")
+
+        c.execute("""CREATE TABLE IF NOT EXISTS print_schedule (
+            id text PRIMARY KEY,  
+            name text,
+            description text,
+            size_z real,
+            price real,
+            time real,
+            gr real,
+            instances_per_buildplate real,
+            filament text,
+            printer text,
+            cm3 real,
+            path text,
+            nozzle_diameter real,
+            slicer text,
+            last_updated text
+            )""")
+        
+        c.execute("""CREATE TABLE IF NOT EXISTS print_history (
+            id text PRIMARY KEY,  
+            name text,
+            size_z real,
+            price real,
+            time real,
+            gr real,
+            instances_per_buildplate real,
+            filament text,
+            printer text,
+            cm3 real,
+            path text,
+            nozzle_diameter real,
+            slicer text,
+            date text
+            )""")
+
 
 
 create_tables()
