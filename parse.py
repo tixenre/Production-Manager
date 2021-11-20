@@ -23,19 +23,24 @@ def parse_gcode(file):
                 days = int(re_time.group(1))
                 hours = int(re_time.group(2))
                 minutes += int(re_time.group(3))
+
+                re_time = f"{days}d {hours}h {minutes}m"
             
             #Checks if gcode time starts with hours
             elif re.search(r"estimated printing time \(silent mode\) = (\d+)h", d):
                 re_time = re.search(r"estimated printing time \(silent mode\) = (\d+)h (\d+)m", d)
                 hours = int(re_time.group(1))
                 minutes += int(re_time.group(2))
+
+                re_time = f"{hours}h {minutes}m"
  
             #Checks if gcode time starts with minutes
             elif re.search(r"estimated printing time \(silent mode\) = (\d+)m", d):
                 re_time = re.search(r"estimated printing time \(silent mode\) = (\d+)m", d)
                 minutes += int(re_time.group(1))
-            
-            re_time = days*24*60 + hours*60 + round(minutes,-1)
+                re_time = f"{minutes}m"
+
+            re_minutes = days*24*60 + hours*60 + round(minutes,-1)
             re_gr = re.search(r"total filament used \[g\] = (\d+.\d+)",d)
             re_kind = re.search(r"filament_type = (\w+)", d)
             re_cm3 = re.search(r"filament used \[cm3\] = (\d+.\d+)",d)
@@ -50,8 +55,9 @@ def parse_gcode(file):
             print(f"Parsing: {file_name}")
 
             data = {
-                "name" : file_check.get_file_name(file),
-                "time" : re_time,
+                "name" : file_name.split(" -")[0],
+                "time_hs" : re_time,
+                "minutes" : re_minutes,
                 "gr" : float(re_gr.group(1)),
                 "kind" : re_kind.group(1),
                 "cm3" : float(re_cm3.group(1)),
@@ -61,8 +67,7 @@ def parse_gcode(file):
                 "printer_model" : re_printer_model.group(1),
                 "slicer" : re_slicer.group(1)
                 }
-
-            print(data)
+            # print(data)
             return data
 
         else:
@@ -71,8 +76,6 @@ def parse_gcode(file):
     else:
         print(f"Gcode {file_name} not found")
 
-# def most_frequent(List):
-#     return max(set(List), key = List.count)
 
 # folder = Path(r"C:\Users\marti\Documents\Hola_Deco\3mf")
 # for file in folder.iterdir():

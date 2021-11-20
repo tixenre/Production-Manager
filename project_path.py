@@ -1,7 +1,6 @@
 from pathlib import Path
 
 cwd = Path.cwd()
-pp= Path(r"C:\Users\marti\Documents\GitHub\Production-Manager")
 folder_3mf = Path('3mf')
 folder_gcode = Path('gcode')
 
@@ -19,8 +18,3 @@ printer_preset_def = Path(r'C:\Users\marti\Documents\GitHub\Production-Manager\P
 print_presets = [f for f in prints.iterdir()]
 filament_presets = [f for f in filaments.iterdir()]
 printer_presets = [f for f in printers.iterdir()]
-
-
-
-# print(prints)
-
