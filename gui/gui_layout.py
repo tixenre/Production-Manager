@@ -1,4 +1,3 @@
-
 import tkinter as tk
 from tkinter import Frame, ttk
 from tkinter import filedialog
@@ -61,7 +60,7 @@ class Gui:
         # Filament Input
         filaments_list = self.get_print_settings()
         def comboclick(event):
-            show = filaments_list.get(combo.get())
+            show = filaments_list.get(selected)
             print(show)
             # Label(root, text= show).pack()
 
@@ -69,6 +68,8 @@ class Gui:
         combo.current(0)
         combo.bind("<<ComboboxSelected>>", comboclick)
         combo.pack()
+
+        selected = combo.get()
 
         # Frame Table
         frame_table= tk.LabelFrame(frame_tab1, text="File Info", background= gs.background_color)
@@ -177,6 +178,8 @@ class Gui:
             di.update({name:path_})
         print(di)
         return di
+
+
 
 if __name__ == "__main__":
 
