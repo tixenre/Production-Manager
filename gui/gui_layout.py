@@ -60,7 +60,7 @@ class Gui:
         # Filament Input
         filaments_list = self.get_print_settings()
         def comboclick(event):
-            show = filaments_list.get(selected)
+            show = filaments_list.get(combo.get())
             print(show)
             # Label(root, text= show).pack()
 
@@ -68,8 +68,7 @@ class Gui:
         combo.current(0)
         combo.bind("<<ComboboxSelected>>", comboclick)
         combo.pack()
-
-        selected = combo.get()
+        
 
         # Frame Table
         frame_table= tk.LabelFrame(frame_tab1, text="File Info", background= gs.background_color)
